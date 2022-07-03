@@ -19,7 +19,7 @@ const App = () => {
         e.preventDefault();
         if (name && edit) {
             setList(
-                list.map((data) => {
+                list?.map((data) => {
                     if (data.id === update) {
                         return { ...data, title: name };
                     }
@@ -31,9 +31,15 @@ const App = () => {
             setEdit(false);
         } else {
             const newList = { id: list.length, title: name };
-            setList([...list, newList]);
-            setName("");
+            if (newList.title === "") {
+                alert("Please enter a title");
+                newList.id = "";
+            } else {
+                setList([...list, newList]);
+                setName("");
+            }
         }
+        console.log(list);
     };
     const handleDelete = (id) => {
         setList((data) => {
@@ -54,7 +60,7 @@ const App = () => {
     }, [list]);
     return (
         <div className={"text-center my-8"}>
-            <div className="bg-white min-h-56 w-[36rem] rounded mx-auto my-4 shadow-xl p-4">
+            <div className="bg-white min-h-56 md:w-[36rem] w-80 duration-500 rounded mx-auto my-4 shadow-xl p-4">
                 <h1 className={"text-xl font-semibold"}>Grocery Bud</h1>
                 <div className={"h-1 w-32 bg-[bisque] mx-auto my-1"}></div>
                 <form
@@ -85,7 +91,7 @@ const App = () => {
                 {list.length > 0 && (
                     <div>
                         <div className={"mt-2"}>
-                            {list.map((data, index) => {
+                            {list?.map((data, index) => {
                                 return (
                                     <List
                                         key={index}
@@ -104,7 +110,7 @@ const App = () => {
                             onClick={() => setList([])}
                         >
                             Clear all
-                        </button>{" "}
+                        </button>
                     </div>
                 )}
             </div>
