@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import List from "./list";
+import Modal from "./modal";
 
 const getLocalStorage = () => {
     const list = localStorage.getItem("list");
@@ -14,6 +15,8 @@ const App = () => {
     const [name, setName] = useState("");
     const [list, setList] = useState(getLocalStorage());
     const [update, setUpdate] = useState(null);
+    const [modal, setModal] = useState(false);
+
     const ref = useRef(null);
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -59,61 +62,86 @@ const App = () => {
         localStorage.setItem("list", JSON.stringify(list));
     }, [list]);
     return (
-        <div className={"text-center my-8"}>
-            <div className="bg-white min-h-56 md:w-[36rem] w-80 duration-500 rounded mx-auto my-4 shadow-xl p-4">
-                <h1 className={"text-xl font-semibold"}>Grocery Bud</h1>
-                <div className={"h-1 w-32 bg-[bisque] mx-auto my-1"}></div>
-                <form
-                    onSubmit={handleSubmit}
-                    className={
-                        "w-11/12 mx-auto flex justify-evenly items-center my-3"
-                    }
-                >
-                    <input
-                        ref={ref}
-                        type={"text"}
-                        placeholder={"e.g. eggs"}
-                        value={name}
-                        onChange={(e) => {
-                            setName(e.target.value);
-                        }}
-                        className="border-2 border-black p-2 focus:outline-none shadow-lg w-4/6 mx-1"
-                    />
-                    <button
-                        type={"submit"}
+        <div>
+            <div className={"text-center my-8"}>
+                <div className="bg-white min-h-56 md:w-[36rem] w-80 duration-500 rounded mx-auto my-4 shadow-xl p-4">
+                    <h1 className={"text-xl font-semibold"}>Grocery Bud</h1>
+                    <div className={"h-1 w-32 bg-[bisque] mx-auto my-1"}></div>
+                    <form
+                        onSubmit={handleSubmit}
                         className={
-                            "border-2 border-black w-2/6 h-11 mx-1 hover:text-white hover:bg-black shadow-lg"
+                            "w-11/12 mx-auto flex justify-evenly items-center my-3"
                         }
                     >
-                        {edit ? "Edit" : "Add"}
-                    </button>
-                </form>
-                {list.length > 0 && (
-                    <div>
-                        <div className={"mt-2"}>
-                            {list?.map((data, index) => {
-                                return (
-                                    <List
-                                        key={index}
-                                        id={data.id}
-                                        title={data.title}
-                                        handleDelete={handleDelete}
-                                        handleUpdate={handleUpdate}
-                                    />
-                                );
-                            })}
-                        </div>
+                        <input
+                            ref={ref}
+                            type={"text"}
+                            placeholder={"e.g. eggs"}
+                            value={name}
+                            onChange={(e) => {
+                                setName(e.target.value);
+                            }}
+                            className="border-2 border-black p-2 focus:outline-none shadow-lg w-4/6 mx-1"
+                        />
                         <button
+                            type={"submit"}
                             className={
-                                "text-red-600 shadow-xl bg-[bisque] py-2 px-3 mt-4 w-40 hover:text-white hover:bg-black"
+                                "border-2 border-black w-2/6 h-11 mx-1 hover:text-white hover:bg-black shadow-lg"
                             }
-                            onClick={() => setList([])}
                         >
-                            Clear all
+                            {edit ? "Save" : "Add"}
                         </button>
-                    </div>
-                )}
+                        {edit && (
+                            <button
+                                onClick={() => {
+                                    setEdit(false);
+                                    setName("");
+                                }}
+                                className={
+                                    "border-2 border-black w-2/6 h-11 mx-1 hover:text-white hover:bg-black shadow-lg"
+                                }
+                            >
+                                Cancel
+                            </button>
+                        )}
+                    </form>
+                    {list.length > 0 && (
+                        <div>
+                            <div className={"mt-2"}>
+                                {list?.map((data, index) => {
+                                    return (
+                                        <List
+                                            key={index}
+                                            id={data.id}
+                                            title={data.title}
+                                            handleDelete={handleDelete}
+                                            handleUpdate={handleUpdate}
+                                        />
+                                    );
+                                })}
+                            </div>
+                            <button
+                                className={
+                                    "text-red-600 shadow-xl bg-[bisque] py-2 px-3 mt-4 w-40 hover:text-white hover:bg-black"
+                                }
+                                onClick={() => setModal(true)}
+                            >
+                                Clear all
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
+            {modal && (
+                <Modal
+                    text={"Are you sure you want to clear all items?"}
+                    onConfirm={() => {
+                        setList([]);
+                        setModal(false);
+                    }}
+                    onCancel={() => setModal(false)}
+                />
+            )}
         </div>
     );
 };
